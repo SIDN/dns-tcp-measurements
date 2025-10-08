@@ -20,3 +20,8 @@ DONE:
 - Think about connections, do I need to keep TCP connections open? (7) -> Answer: no, just 
         don't think about it
 
+
+
+NOTE:
+- Normaal stond ulimit -n op 1024, om het goed te laten werken heb ik eerst dit verhoogd naar 4096, maar dat was nog niet genoeg dus nu is het verhoogd naar 8192 en daarna zelfs naar 16384. Hierdoor kreeg ik niet meer workers, maar ik kreeg wel dat alles een stuk sneller ging
+- Interessant: als je een tijdje het niet gerund hebt, dan lijkt het dat er iets op slaapstand gaat en dus wat langer doet over reageren. Want dan gaat hij opeens naar 5000 per seconde. Dit neemt dan af en wordt steeds sneller als je de query vaker stuurt tot hij weer op rond de 20000 qps uitkomt. 

@@ -1,0 +1,12 @@
+$ORIGIN dhx5plx.de.
+$TTL 86400 ; 1 day
+@   IN  SOA ns.dhx5plx.de. admin.dhx5plx.de. (
+        2025091701 ; Serial
+        3600       ; Refresh
+        1800       ; Retry
+        604800     ; Expire
+        86400      ; Minimum TTL
+)
+@   IN  NS  ns.dhx5plx.de.
+ns  IN  A   127.0.0.1
+@   IN  A   127.0.0.1
