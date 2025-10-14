@@ -97,7 +97,6 @@ func readQueryData(filename string) ([]Query, error) {
 	if err != nil {
 		return nil, fmt.Errorf("readQueryData: %s", err)
 	}
-	records = records[1:] // Dismiss the first line of the .csv file.
 
 	for _, record := range records {
 		offsetStr := record[0]
