@@ -108,6 +108,9 @@ func readQueryData(filename string) ([]Query, error) {
 
 		// protocol := record[3] //TODO check what do we do with the protocol: UDP/TCP (all should be UDP right?)
 		request := record[1]
+		// Change requests to .nl. to a request to nl.
+		request = strings.TrimPrefix(request, ".")
+
 		reqType := record[2]
 		msg, err := createDNSMsg(request, reqType)
 		if err != nil {
