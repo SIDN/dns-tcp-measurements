@@ -205,8 +205,13 @@ func main() {
 		return
 	}
 	********** STOP CODE TO CREATE QUERY WITH OFFSET **********/
-
-	queries, err := readQueryData("test-csv/test_file_structure.csv")
+	var query_filename string
+	if len(os.Args) <= 1 {
+		query_filename = "test-csv/test_file_structure.csv"
+	} else {
+		query_filename = os.Args[1]
+	}
+	queries, err := readQueryData(query_filename)
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
@@ -229,8 +234,8 @@ func main() {
 		if response.err == nil {
 			counter++
 			//fmt.Printf("query time: %.3d µs, size: %d bytes\n", response.rtt/1e3, response.resp.Len())
+			fmt.Printf("%v", dns.RcodeToString[response.resp.Rcode])
 		}
-		fmt.Printf("%v", dns.RcodeToString[response.resp.Rcode])
 	}
 	fmt.Printf("Number of error-less responses: %d \n", counter)
 	fmt.Printf("Execution time: %s\n", duration)
