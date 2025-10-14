@@ -6,8 +6,8 @@ timing replay (send the queries with the relative timing provided in the input f
 ## Input
 The dataformat of the input file should be as follows:
 ```
-offset   protocol  request      type
-0.001,UDP,example.nl,AAAA
+time,qname,qtype,prot
+0.001,example.nl,AAAA,UDP
 ```
 Where `offset` is the time in seconds relative to the start of the replay at which the query should be sent. The other headers 
 are pretty straightforward, so if it should use UDP or TCP, what domain name it should request and what type of 

@@ -97,18 +97,19 @@ func readQueryData(filename string) ([]Query, error) {
 	if err != nil {
 		return nil, fmt.Errorf("readQueryData: %s", err)
 	}
+	records = records[1:] // Dismiss the first line of the .csv file.
 
 	for _, record := range records {
 		offsetStr := record[0]
 
 		// Check whether the offsetStr ends on an `s`, if not we want to add it
 		if !strings.HasSuffix(offsetStr, "s") {
-			offsetStr = offsetStr + string('s')
+			offsetStr = offsetStr + "ms" //We are working with milliseconds
 		}
 
-		// protocol := record[1] //TODO check what do we do with the protocol: UDP/TCP (all should be UDP right?)
-		request := record[2]
-		reqType := record[3]
+		// protocol := record[3] //TODO check what do we do with the protocol: UDP/TCP (all should be UDP right?)
+		request := record[1]
+		reqType := record[2]
 		msg, err := createDNSMsg(request, reqType)
 		if err != nil {
 			return nil, fmt.Errorf("readQueryData: error while creating DNS Msg for request: %s, with error: %s", request, err)
@@ -206,7 +207,7 @@ func main() {
 	}
 	********** STOP CODE TO CREATE QUERY WITH OFFSET **********/
 
-	queries, err := readQueryData("test-csv/queries.csv")
+	queries, err := readQueryData("test-csv/test_file_structure.csv")
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
@@ -230,6 +231,7 @@ func main() {
 			counter++
 			//fmt.Printf("query time: %.3d µs, size: %d bytes\n", response.rtt/1e3, response.resp.Len())
 		}
+		fmt.Printf("%v", dns.RcodeToString[response.resp.Rcode])
 	}
 	fmt.Printf("Number of error-less responses: %d \n", counter)
 	fmt.Printf("Execution time: %s\n", duration)
