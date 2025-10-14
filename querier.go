@@ -229,14 +229,20 @@ func main() {
 	start := time.Now()
 	SendQueries(queryCh, "127.0.0.1:4242", responseCh)
 	duration := time.Since(start)
+	rcodeCounter := make(map[uint16]int)
+
 	counter := 0
 	for response := range responseCh {
 		if response.err == nil {
 			counter++
+			rcodeCounter[response.resp.Rcode]++
 			//fmt.Printf("query time: %.3d µs, size: %d bytes\n", response.rtt/1e3, response.resp.Len())
-			fmt.Printf("%v", dns.RcodeToString[response.resp.Rcode])
 		}
 	}
 	fmt.Printf("Number of error-less responses: %d \n", counter)
 	fmt.Printf("Execution time: %s\n", duration)
+	fmt.Println("\nEncountered Rcodes and their count:")
+	for rcode, count := range rcodeCounter {
+		fmt.Printf("RCode: %s, Count: %d\n", dns.RcodeToString[rcode], count)
+	}
 }
