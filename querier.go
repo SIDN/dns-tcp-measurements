@@ -7,7 +7,7 @@ import (
 
 	// "log"
 	"os"
-	"sort"
+	// "sort"
 	"strings"
 	"sync"
 	"time"
@@ -22,6 +22,7 @@ type Response struct {
 	resp *dns.Msg      // actual DNS response
 	rtt  time.Duration // round trip time to the nameserver
 	err  error         // any error that occurred
+	tcp  bool
 }
 
 // A Query is the representation of a DNS query and the corresponding
@@ -97,8 +98,12 @@ func readQueryData(filename string) ([]Query, error) {
 	if err != nil {
 		return nil, fmt.Errorf("readQueryData: %s", err)
 	}
-
-	for _, record := range records {
+	a6Dropped := 0
+	t97Droped := 0
+	for i, record := range records {
+		if i == 1000000 {
+			break //TODO comment once we do want to use all the queries
+		}
 		offsetStr := record[0]
 
 		// Check whether the offsetStr ends on an `s`, if not we want to add it
@@ -112,6 +117,17 @@ func readQueryData(filename string) ([]Query, error) {
 		request = strings.TrimPrefix(request, ".")
 
 		reqType := record[2]
+		if reqType == "A6" {
+			a6Dropped++
+			request = "example.nl."
+			reqType = "NS"
+			continue
+		} else if reqType == "TYPE97" {
+			t97Droped++
+			request = "example.nl."
+			reqType = "NS"
+			continue
+		}
 		msg, err := createDNSMsg(request, reqType)
 		if err != nil {
 			return nil, fmt.Errorf("readQueryData: error while creating DNS Msg for request: %s, with error: %s", request, err)
@@ -122,6 +138,9 @@ func readQueryData(filename string) ([]Query, error) {
 		}
 		queries = append(queries, query)
 	}
+	fmt.Printf("In total replaced %d queries, these consisted of: \n", a6Dropped+t97Droped)
+	fmt.Printf("- %d A6 queries \n", a6Dropped)
+	fmt.Printf("- %d TYPE97 queries \n", t97Droped)
 
 	return queries, nil
 }
@@ -132,18 +151,19 @@ func resolve(m *dns.Msg, address string, client *dns.Client) Response {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	resp, rtt, err := client.Exchange(ctx, m, "udp", address)
-
+	tcp := false
 Redo:
 	if err != nil {
 		return Response{err: fmt.Errorf("resolve: error while doing exchange: %s", err)}
 	}
 	if resp.Truncated { //If the response is truncated then we want to start a TCP connection
 		// fmt.Println("Got reponse with TC=1, so retrying over TCP")
+		tcp = true
 		resp, rtt, err = client.Exchange(ctx, m, "tcp", address)
 		goto Redo
 	}
 
-	return Response{resp: resp, rtt: rtt, err: nil}
+	return Response{resp: resp, rtt: rtt, err: nil, tcp: tcp}
 }
 
 // SendQueries is a function that has a number of goroutines take a query from the
@@ -219,30 +239,36 @@ func main() {
 		fmt.Printf("%s\n", err)
 		return
 	}
-	sort.Sort(ByOffset(queries)) //Only necessary if the .csv file comes in unsorted
+	// sort.Sort(ByOffset(queries)) //Only necessary if the .csv file comes in unsorted
 
 	// Now we want to turn the Query slice into a Query channel
 	queryCh := make(chan Query, len(queries))
 	for _, q := range queries {
 		queryCh <- q
 	}
-
+	numQueries := len(queries)
 	close(queryCh) //No more messages will come after
 	responseCh := make(chan Response, len(queries))
+	fmt.Println("Done with prep")
 	start := time.Now()
 	SendQueries(queryCh, "127.0.0.1:4242", responseCh)
 	duration := time.Since(start)
 	rcodeCounter := make(map[uint16]int)
 
 	counter := 0
+	tcp := 0
 	for response := range responseCh {
 		if response.err == nil {
 			counter++
 			rcodeCounter[response.resp.Rcode]++
+			if response.tcp {
+				tcp++
+			}
 			//fmt.Printf("query time: %.3d µs, size: %d bytes\n", response.rtt/1e3, response.resp.Len())
 		}
 	}
-	fmt.Printf("Number of error-less responses: %d \n", counter)
+	fmt.Printf("Number of error-less responses: %d of %d queries \n", counter, numQueries)
+	fmt.Printf("Number of responses over TCP: %d \n", tcp)
 	fmt.Printf("Execution time: %s\n", duration)
 	fmt.Println("\nEncountered Rcodes and their count:")
 	for rcode, count := range rcodeCounter {
