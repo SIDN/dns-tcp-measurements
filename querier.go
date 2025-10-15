@@ -152,15 +152,18 @@ func resolve(m *dns.Msg, address string, client *dns.Client) Response {
 	defer cancel()
 	resp, rtt, err := client.Exchange(ctx, m, "udp", address)
 	tcp := false
-Redo:
+	// Redo:
 	if err != nil {
 		return Response{err: fmt.Errorf("resolve: error while doing exchange: %s", err)}
 	}
-	if resp.Truncated { //If the response is truncated then we want to start a TCP connection
-		// fmt.Println("Got reponse with TC=1, so retrying over TCP")
-		tcp = true
-		resp, rtt, err = client.Exchange(ctx, m, "tcp", address)
-		goto Redo
+	// if resp.Truncated { //If the response is truncated then we want to start a TCP connection
+	// fmt.Println("Got reponse with TC=1, so retrying over TCP")
+	tcp = true
+	resp, rtt, err = client.Exchange(ctx, m, "tcp", address)
+	// goto Redo
+	// }
+	if err != nil {
+		return Response{err: fmt.Errorf("resolve: error while doing exchange: %s", err)}
 	}
 
 	return Response{resp: resp, rtt: rtt, err: nil, tcp: tcp}
