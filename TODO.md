@@ -13,14 +13,9 @@ DONE:
 - Make a query sender that goes over a list of queries and calls 
 		upon the resolve function to send this query in parallel i guess (2)
 - Make a function that reads the query input file and turns it into a slice of query messages
-		for this it might be nice to make sure the input file is formated in the same format as 
-		as what Msg.String retuns, because then we can use https://codeberg.org/miekg/dns/src/branch/main/dnsutil/msg.go 
-		StringToMsg function to turn the string in the file into a DNS query. (3)
 - Extend the query sender such that it sends queries with the right timing (if necessary). (5)
 
 
-!!!!! Source port and IP address in datamodel?????
-
 NOTE:
 - Normaal stond ulimit -n op 1024, om het goed te laten werken heb ik eerst dit verhoogd naar 4096, maar dat was nog niet genoeg dus nu is het verhoogd naar 8192 en daarna zelfs naar 16384. Hierdoor kreeg ik niet meer workers, maar ik kreeg wel dat alles een stuk sneller ging
-- Interessant: als je een tijdje het niet gerund hebt, dan lijkt het dat er iets op slaapstand gaat en dus wat langer doet over reageren. Want dan gaat hij opeens naar 5000 per seconde. Dit neemt dan af en wordt steeds sneller als je de query vaker stuurt tot hij weer op rond de 20000 qps uitkomt. 
+- Interessant: als je een tijdje het niet gerund hebt, dan lijkt het dat er iets op slaapstand gaat en dus wat langer doet over reageren. Want dan gaat hij opeens naar 5000 per seconde. Dit neemt dan af en wordt steeds sneller als je de query vaker stuurt tot hij weer op rond de 20000 qps uitkomt. -> dit is gefixt door pasta ipv slirp4netns te gebruiken.

@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
+	"math/rand"
 
 	// "log"
 	"os"
 	// "sort"
+	"flag"
 	"strings"
 	"sync"
 	"time"
@@ -147,7 +149,7 @@ func readQueryData(filename string) ([]Query, error) {
 
 // resolve returns a Response that it gets from the nameserver at
 // address when it queries for DNS question m using client.
-func resolve(m *dns.Msg, address string, client *dns.Client) Response {
+func resolve(m *dns.Msg, address string, client *dns.Client, percentage float64) Response {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	resp, rtt, err := client.Exchange(ctx, m, "udp", address)
@@ -156,14 +158,14 @@ func resolve(m *dns.Msg, address string, client *dns.Client) Response {
 	if err != nil {
 		return Response{err: fmt.Errorf("resolve: error while doing exchange: %s", err)}
 	}
-	// if resp.Truncated { //If the response is truncated then we want to start a TCP connection
-	// fmt.Println("Got reponse with TC=1, so retrying over TCP")
-	tcp = true
-	resp, rtt, err = client.Exchange(ctx, m, "tcp", address)
-	// goto Redo
-	// }
-	if err != nil {
-		return Response{err: fmt.Errorf("resolve: error while doing exchange: %s", err)}
+	if rand.Float64()*100 < percentage { //According to rand we make sure we only select `percentage` of queries
+		// fmt.Println("Got reponse with TC=1, so retrying over TCP")
+		tcp = true
+		resp, rtt, err = client.Exchange(ctx, m, "tcp", address)
+		// goto Redo
+		if err != nil {
+			return Response{err: fmt.Errorf("resolve: error while doing exchange: %s", err)}
+		}
 	}
 
 	return Response{resp: resp, rtt: rtt, err: nil, tcp: tcp}
@@ -172,7 +174,7 @@ func resolve(m *dns.Msg, address string, client *dns.Client) Response {
 // SendQueries is a function that has a number of goroutines take a query from the
 // queries channel, send it with the right timing to address. The response it gets
 // it will put in the responses channel
-func SendQueries(queries <-chan Query, address string, responses chan<- Response) {
+func SendQueries(queries <-chan Query, address string, responses chan<- Response, percentage float64) {
 	defer close(responses)
 	sem := make(chan struct{}, 165) //We cannot seem to make more workers without problems
 	client := new(dns.Client)       // Reuse one client
@@ -190,7 +192,7 @@ func SendQueries(queries <-chan Query, address string, responses chan<- Response
 			}
 
 			// fmt.Printf("Query sent at: %s (relative to start)\n", time.Since(start))
-			response := resolve(q.quer, address, client)
+			response := resolve(q.quer, address, client, percentage)
 			// fmt.Printf("Query resolved at: %s (relative to start)\n", time.Since(start))
 			if response.err != nil {
 				fmt.Printf("SendQueries: error while resolving: %s\n", response.err.Error())
@@ -231,13 +233,30 @@ func main() {
 		return
 	}
 	********** STOP CODE TO CREATE QUERY WITH OFFSET **********/
-	var query_filename string
-	if len(os.Args) <= 1 {
-		query_filename = "test-csv/test_file_structure.csv"
-	} else {
-		query_filename = os.Args[1]
-	}
-	queries, err := readQueryData(query_filename)
+	// queryFilename := "test-csv/test_file_structure.csv" //Default input filename
+	// percentage := 100.0                                  //Default input percentage TCP
+	// nameserverAddress := "127.0.0.1:4242"
+
+	// if len(os.Args) > 1 {
+	// 	queryFilename = os.Args[1]
+	// }
+	// if len(os.Args) > 2 {
+	// 	var err error
+	// 	percentage, err = strconv.ParseFloat(os.Args[2], 64)
+	// 	if err != nil {
+	// 		fmt.Printf("Error parsing percentage %q: %v\n", os.Args[2], err)
+	// 	}
+	// }
+	// if len(os.Args) > 3 {
+	// 	nameserverAddress = os.Args[3]
+	// }
+
+	queryFilename := flag.String("f", "test-csv/test_file_structure.csv", "Filename specifying what file the queries should be read from.")
+	percentage := flag.Float64("p", 100.0, "A float value that represents the percentage of queries that we want to retry over TCP.")
+	nameserverAddress := flag.String("s", "127.0.0.1:4242", "A string in the format of [IP-address]:[port] that specifies at what address the nameserver is listening.")
+	flag.Parse() //Get the command line arguments
+
+	queries, err := readQueryData(*queryFilename)
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
@@ -254,7 +273,7 @@ func main() {
 	responseCh := make(chan Response, len(queries))
 	fmt.Println("Done with prep")
 	start := time.Now()
-	SendQueries(queryCh, "127.0.0.1:4242", responseCh)
+	SendQueries(queryCh, *nameserverAddress, responseCh, *percentage)
 	duration := time.Since(start)
 	rcodeCounter := make(map[uint16]int)
 
