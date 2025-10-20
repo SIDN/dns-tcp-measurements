@@ -156,7 +156,7 @@ func resolve(m *dns.Msg, address string, client *dns.Client, percentage float64)
 	tcp := false
 	// Redo:
 	if err != nil {
-		return Response{err: fmt.Errorf("resolve: error while doing exchange: %s", err)}
+		return Response{err: fmt.Errorf("resolve: error while doing udp exchange: %s", err)}
 	}
 	if rand.Float64()*100 < percentage { //According to rand we make sure we only select `percentage` of queries
 		// fmt.Println("Got reponse with TC=1, so retrying over TCP")
@@ -164,7 +164,7 @@ func resolve(m *dns.Msg, address string, client *dns.Client, percentage float64)
 		resp, rtt, err = client.Exchange(ctx, m, "tcp", address)
 		// goto Redo
 		if err != nil {
-			return Response{err: fmt.Errorf("resolve: error while doing exchange: %s", err)}
+			return Response{err: fmt.Errorf("resolve: error while doing tcp exchange: %s", err)}
 		}
 	}
 
@@ -233,23 +233,6 @@ func main() {
 		return
 	}
 	********** STOP CODE TO CREATE QUERY WITH OFFSET **********/
-	// queryFilename := "test-csv/test_file_structure.csv" //Default input filename
-	// percentage := 100.0                                  //Default input percentage TCP
-	// nameserverAddress := "127.0.0.1:4242"
-
-	// if len(os.Args) > 1 {
-	// 	queryFilename = os.Args[1]
-	// }
-	// if len(os.Args) > 2 {
-	// 	var err error
-	// 	percentage, err = strconv.ParseFloat(os.Args[2], 64)
-	// 	if err != nil {
-	// 		fmt.Printf("Error parsing percentage %q: %v\n", os.Args[2], err)
-	// 	}
-	// }
-	// if len(os.Args) > 3 {
-	// 	nameserverAddress = os.Args[3]
-	// }
 
 	queryFilename := flag.String("f", "test-csv/test_file_structure.csv", "Filename specifying what file the queries should be read from.")
 	percentage := flag.Float64("p", 100.0, "A float value that represents the percentage of queries that we want to retry over TCP.")
@@ -278,19 +261,23 @@ func main() {
 	rcodeCounter := make(map[uint16]int)
 
 	counter := 0
+	actualQueries := 0 //This is the number of queries that is actually sent, accounting for the double query in tcp
 	tcp := 0
 	for response := range responseCh {
 		if response.err == nil {
 			counter++
 			rcodeCounter[response.resp.Rcode]++
+			actualQueries++
 			if response.tcp {
 				tcp++
+				actualQueries++
 			}
 			//fmt.Printf("query time: %.3d µs, size: %d bytes\n", response.rtt/1e3, response.resp.Len())
 		}
 	}
 	fmt.Printf("Number of error-less responses: %d of %d queries \n", counter, numQueries)
 	fmt.Printf("Number of responses over TCP: %d \n", tcp)
+	fmt.Printf("Number of queries, accounting for double query of TCP: %d\n", actualQueries)
 	fmt.Printf("Execution time: %s\n", duration)
 	fmt.Println("\nEncountered Rcodes and their count:")
 	for rcode, count := range rcodeCounter {
