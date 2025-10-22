@@ -140,7 +140,7 @@ func readQueryData(filename string) ([]Query, error) {
 		}
 		queries = append(queries, query)
 	}
-	fmt.Printf("In total replaced %d queries, these consisted of: \n", a6Dropped+t97Droped)
+	fmt.Printf("In total replaced %d queries, these consisted of \n", a6Dropped+t97Droped)
 	fmt.Printf("- %d A6 queries \n", a6Dropped)
 	fmt.Printf("- %d TYPE97 queries \n", t97Droped)
 
@@ -275,12 +275,13 @@ func main() {
 			//fmt.Printf("query time: %.3d µs, size: %d bytes\n", response.rtt/1e3, response.resp.Len())
 		}
 	}
-	fmt.Printf("Number of error-less responses: %d of %d queries \n", counter, numQueries)
-	fmt.Printf("Number of responses over TCP: %d \n", tcp)
-	fmt.Printf("Number of queries, accounting for double query of TCP: %d\n", actualQueries)
+	fmt.Printf("Succesful responses: %d\n", counter)
+	fmt.Printf("Total queries: %d\n", numQueries)
+	fmt.Printf("Amount with TCP: %d \n", tcp)
+	fmt.Printf("Total queries, incl. duplicate TCP: %d\n", actualQueries)
 	fmt.Printf("Execution time: %s\n", duration)
-	fmt.Println("\nEncountered Rcodes and their count:")
+	fmt.Println("\nEncountered Rcodes and their count")
 	for rcode, count := range rcodeCounter {
-		fmt.Printf("RCode: %s, Count: %d\n", dns.RcodeToString[rcode], count)
+		fmt.Printf("RCode %s, Count %d\n", dns.RcodeToString[rcode], count)
 	}
 }

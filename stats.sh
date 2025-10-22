@@ -1,12 +1,19 @@
 #! /bin/bash
 
-OUTPUT_FILE="container_stats.json"
+# Check if at least one argument is passed
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <output_filename>"
+    exit 1
+fi
+
+
+OUTPUT_FILE="$1"
 
 echo "[" > $OUTPUT_FILE
 
 first_entry=true
 
-trap "echo ']' >> $OUTPUT_FILE; exit" SIGINT
+trap "echo ']' >> $OUTPUT_FILE; exit" EXIT
 
 # Infinite loop:
 for (( ; ; )) 
