@@ -15,7 +15,6 @@ first_entry=true
 
 trap "echo ']' >> $OUTPUT_FILE; exit" EXIT
 
-# Infinite loop:
 for (( ; ; )) 
 do 
     # Get the statistics

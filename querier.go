@@ -45,11 +45,15 @@ func (o ByOffset) Less(i, j int) bool { return o[i].offset < o[j].offset }
 // createDNSMsg returns a *dns.Msg created based on domainname domain and
 // query type qtype. If an error occurs during this process, it returns the
 // corresponding error.
-func createDNSMsg(domain string, qtype string) (*dns.Msg, error) {
+func createDNSMsg(domain string, qtype string, DO_bit string) (*dns.Msg, error) {
 	m := new(dns.Msg)
 
 	if value, exists := dns.StringToType[qtype]; exists {
 		dnsutil.SetQuestion(m, dnsutil.Fqdn(domain), value)
+		if DO_bit == "1" {
+			m.Security = true
+			m.UDPSize = 4096
+		}
 	} else {
 		return m, fmt.Errorf("createDNSMsg: The qtype %s does not exist", qtype)
 	}
@@ -130,7 +134,8 @@ func readQueryData(filename string) ([]Query, error) {
 			reqType = "NS"
 			continue
 		}
-		msg, err := createDNSMsg(request, reqType)
+		DO_bit := record[4] 
+		msg, err := createDNSMsg(request, reqType, DO_bit)
 		if err != nil {
 			return nil, fmt.Errorf("readQueryData: error while creating DNS Msg for request: %s, with error: %s", request, err)
 		}
