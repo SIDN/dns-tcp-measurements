@@ -30,8 +30,8 @@ type Response struct {
 // A Query is the representation of a DNS query and the corresponding
 // relative offset that we want this query to have in the replay
 type Query struct {
-	quer   *dns.Msg
-	offset time.Duration
+	query_strings []string
+	offset        time.Duration
 }
 
 // ByOffset implements the sort.Interface for []Query based on the
@@ -45,17 +45,46 @@ func (o ByOffset) Less(i, j int) bool { return o[i].offset < o[j].offset }
 // createDNSMsg returns a *dns.Msg created based on domainname domain and
 // query type qtype. If an error occurs during this process, it returns the
 // corresponding error.
-func createDNSMsg(domain string, qtype string, DO_bit string) (*dns.Msg, error) {
+// func createDNSMsg(domain string, qtype string, DO_bit string) (*dns.Msg, error) {
+// 	m := new(dns.Msg)
+
+// 	if value, exists := dns.StringToType[qtype]; exists {
+// 		dnsutil.SetQuestion(m, dnsutil.Fqdn(domain), value)
+// 		if DO_bit == "1" {
+// 			m.Security = true
+// 			m.UDPSize = 4096
+// 		}
+// 	} else {
+// 		return m, fmt.Errorf("createDNSMsg: The qtype %s does not exist", qtype)
+// 	}
+
+//		return m, nil
+//	}
+func createDNSMsg(query_strings []string) (*dns.Msg, error) {
+	// protocol := record[3] //TODO check what do we do with the protocol: UDP/TCP (all should be UDP right?)
+	request := query_strings[0]
+	// Change requests to .nl. to a request to nl.
+	request = strings.TrimPrefix(request, ".")
+
+	reqType := query_strings[1]
+	if reqType == "A6" {
+		request = "64hpx3g.4o."
+		reqType = "A"
+	} else if reqType == "TYPE97" {
+		request = "64hpx3g.4o."
+		reqType = "A"
+	}
+	DO_bit := query_strings[3]
 	m := new(dns.Msg)
 
-	if value, exists := dns.StringToType[qtype]; exists {
-		dnsutil.SetQuestion(m, dnsutil.Fqdn(domain), value)
+	if value, exists := dns.StringToType[reqType]; exists {
+		dnsutil.SetQuestion(m, dnsutil.Fqdn(request), value)
 		if DO_bit == "1" {
 			m.Security = true
 			m.UDPSize = 4096
 		}
 	} else {
-		return m, fmt.Errorf("createDNSMsg: The qtype %s does not exist", qtype)
+		return m, fmt.Errorf("createDNSMsg: The qtype %s does not exist", reqType)
 	}
 
 	return m, nil
@@ -64,13 +93,13 @@ func createDNSMsg(domain string, qtype string, DO_bit string) (*dns.Msg, error) 
 // createQueryWithOffset returns a Query, that consist of the given dnsMsg
 // and the given offset. If an error occurs, it returns the corresponding
 // error.
-func createQueryWithOffset(dnsMsg *dns.Msg, offset string) (Query, error) {
-	d, err := time.ParseDuration(offset)
-	if err != nil {
-		return Query{}, fmt.Errorf("createQueryWithOffset: bad offset %q: %v", offset, err)
-	}
-	return Query{quer: dnsMsg, offset: d}, nil
-}
+// func createQueryWithOffset(dnsMsg *dns.Msg, offset string) (Query, error) {
+// 	d, err := time.ParseDuration(offset)
+// 	if err != nil {
+// 		return Query{}, fmt.Errorf("createQueryWithOffset: bad offset %q: %v", offset, err)
+// 	}
+// 	return Query{query: dnsMsg, offset: d}, nil
+// }
 
 // readCsvFile returns a slice of string slices that contains the records
 // and corresponding fields of the csv file stored at filePath.
@@ -104,8 +133,8 @@ func readQueryData(filename string) ([]Query, error) {
 	if err != nil {
 		return nil, fmt.Errorf("readQueryData: %s", err)
 	}
-	a6Dropped := 0
-	t97Droped := 0
+	// a6Dropped := 0
+	// t97Droped := 0
 	for _, record := range records {
 		// if i == 1000000 {
 		// 	break //TODO comment once we do want to use all the queries
@@ -117,37 +146,41 @@ func readQueryData(filename string) ([]Query, error) {
 			offsetStr = offsetStr + "ms" //We are working with milliseconds
 		}
 
-		// protocol := record[3] //TODO check what do we do with the protocol: UDP/TCP (all should be UDP right?)
-		request := record[1]
-		// Change requests to .nl. to a request to nl.
-		request = strings.TrimPrefix(request, ".")
+		timing, err := time.ParseDuration(offsetStr)
+		if err != nil {
+			return nil, fmt.Errorf("readQueryData: error while parsing the offset for offset: %s", offsetStr)
+		}
 
-		reqType := record[2]
-		if reqType == "A6" {
-			a6Dropped++
-			request = "64hpx3g.4o."
-			reqType = "A"
-			continue
-		} else if reqType == "TYPE97" {
-			t97Droped++
-			request = "64hpx3g.4o."
-			reqType = "A"
-			continue
-		}
-		DO_bit := record[4] 
-		msg, err := createDNSMsg(request, reqType, DO_bit)
-		if err != nil {
-			return nil, fmt.Errorf("readQueryData: error while creating DNS Msg for request: %s, with error: %s", request, err)
-		}
-		query, err := createQueryWithOffset(msg, offsetStr)
-		if err != nil {
-			return nil, fmt.Errorf("readQueryData: error while creating query with offset for request %s, with offset %s, and error %s", request, offsetStr, err)
-		}
+		// // protocol := record[3] //TODO check what do we do with the protocol: UDP/TCP (all should be UDP right?)
+		// request := record[1]
+		// // Change requests to .nl. to a request to nl.
+		// request = strings.TrimPrefix(request, ".")
+
+		// reqType := record[2]
+		// if reqType == "A6" {
+		// 	a6Dropped++
+		// 	request = "64hpx3g.4o."
+		// 	reqType = "A"
+		// } else if reqType == "TYPE97" {
+		// 	t97Droped++
+		// 	request = "64hpx3g.4o."
+		// 	reqType = "A"
+		// }
+		// DO_bit := record[4]
+		// msg, err := createDNSMsg(request, reqType, DO_bit)
+		// if err != nil {
+		// 	return nil, fmt.Errorf("readQueryData: error while creating DNS Msg for request: %s, with error: %s", request, err)
+		// }
+		// query, err := createQueryWithOffset(msg, offsetStr)
+		// if err != nil {
+		// 	return nil, fmt.Errorf("readQueryData: error while creating query with offset for request %s, with offset %s, and error %s", request, offsetStr, err)
+		// }
+		query := Query{query_strings: record[1:], offset: timing}
 		queries = append(queries, query)
 	}
-	fmt.Printf("In total replaced %d queries, these consisted of \n", a6Dropped+t97Droped)
-	fmt.Printf("- %d A6 queries \n", a6Dropped)
-	fmt.Printf("- %d TYPE97 queries \n", t97Droped)
+	// fmt.Printf("In total replaced %d queries, these consisted of \n", a6Dropped+t97Droped)
+	// fmt.Printf("- %d A6 queries \n", a6Dropped)
+	// fmt.Printf("- %d TYPE97 queries \n", t97Droped)
 
 	return queries, nil
 }
@@ -195,9 +228,12 @@ func SendQueries(queries <-chan Query, address string, responses chan<- Response
 			if sleep > 0 {
 				time.Sleep(sleep)
 			}
-
+			msg, err := createDNSMsg(q.query_strings)
+			if err != nil {
+				fmt.Printf("%s\n", fmt.Errorf("SendQueries: error while creating dns message: %s", err))
+			}
 			// fmt.Printf("Query sent at: %s (relative to start)\n", time.Since(start))
-			response := resolve(q.quer, address, client, percentage)
+			response := resolve(msg, address, client, percentage)
 			// fmt.Printf("Query resolved at: %s (relative to start)\n", time.Since(start))
 			if response.err != nil {
 				fmt.Printf("SendQueries: error while resolving: %s\n", response.err.Error())
@@ -257,12 +293,15 @@ func main() {
 		queryCh <- q
 	}
 	numQueries := len(queries)
-	close(queryCh) //No more messages will come after
-	responseCh := make(chan Response, len(queries))
+	close(queryCh)                          //No more messages will come after
+	responseCh := make(chan Response, 1000) //should only contain 165 responses at a time, at its peak maybe triple that (I hope...)
 	fmt.Println("Done with prep")
-	start := time.Now()
-	SendQueries(queryCh, *nameserverAddress, responseCh, *percentage)
-	duration := time.Since(start)
+	var duration time.Duration
+	go func() {
+		start := time.Now()
+		SendQueries(queryCh, *nameserverAddress, responseCh, *percentage)
+		duration = time.Since(start)
+	}()
 	rcodeCounter := make(map[uint16]int)
 
 	counter := 0
