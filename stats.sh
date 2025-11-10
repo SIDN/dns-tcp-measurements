@@ -27,5 +27,5 @@ do
         echo ", $response" >> $OUTPUT_FILE
     fi
 
-    sleep 10
+    sleep 30
 done 

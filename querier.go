@@ -106,10 +106,10 @@ func readQueryData(filename string) ([]Query, error) {
 	}
 	a6Dropped := 0
 	t97Droped := 0
-	for i, record := range records {
-		if i == 1000000 {
-			break //TODO comment once we do want to use all the queries
-		}
+	for _, record := range records {
+		// if i == 1000000 {
+		// 	break //TODO comment once we do want to use all the queries
+		// }
 		offsetStr := record[0]
 
 		// Check whether the offsetStr ends on an `s`, if not we want to add it
@@ -125,13 +125,13 @@ func readQueryData(filename string) ([]Query, error) {
 		reqType := record[2]
 		if reqType == "A6" {
 			a6Dropped++
-			request = "example.nl."
-			reqType = "NS"
+			request = "64hpx3g.4o."
+			reqType = "A"
 			continue
 		} else if reqType == "TYPE97" {
 			t97Droped++
-			request = "example.nl."
-			reqType = "NS"
+			request = "64hpx3g.4o."
+			reqType = "A"
 			continue
 		}
 		DO_bit := record[4] 
