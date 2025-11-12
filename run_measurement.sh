@@ -48,9 +48,13 @@ do_one_measurement () {
 timestamp_str=$(date +"%d-%m-%Y_%H:%M:%S")
 
 
-do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/0_tcp_host_${timestamp_str}.json" "0"
+# do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/50_tcp_host_${timestamp_str}.json" "50"
+# date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+# echo "[$date_string] measurement 50% tcp done"
+
+do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/50_tcp_host_${timestamp_str}.json" "50"
 date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-echo "[$date_string] measurement 0% tcp done"
+echo "[$date_string] measurement 50% tcp done"
 # sleep 10
 # do_one_measurement "/home/elmer/ns1data/ns1-1h-anon.csv" "stats-output/100_tcp_host_${timestamp_str}.json" "100"
 # echo "measurement 100% tcp done"

@@ -4,6 +4,7 @@ import json
 
 def parse_querier_output(querier_output):
     # Find all lines of the form "something: value"
+    number_errors = 0
     pairs = [line.split(":", 1) for line in querier_output if ":" in line]
 
     results = {}
@@ -29,10 +30,13 @@ def parse_querier_output(querier_output):
                 results[key] = total_seconds
             else:
                 results[key] = None
+        elif key.lower().startswith("sendqueries"):
+            number_errors += 1
         else:
             # Parse regular integers/floats
             num_match = re.search(r'[\d.]+', value)
             results[key] = float(num_match.group()) if num_match else None
+    results["number_errors"] = number_errors
     return results
 
 
@@ -52,9 +56,11 @@ with open(output_filename, 'r') as file:
 
 total_data = {
     "containerOutput" : stat_data,
+    "numberErrors" : parsed_output['number_errors'],
     "querySendingTime" : parsed_output['Execution time'],
     "numberOfQueries" : parsed_output['Total queries'],
     "tcpPercentage" : parsed_output['Amount with TCP']/parsed_output['Total queries'] * 100,
+    "rawOutput" : querier_output,
     "network" : "host"
 }
 
