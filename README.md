@@ -71,4 +71,6 @@ With these inputs it then does the following in specified order:
 8. Run `complete_json_file.py` to combine the different measurement outputs into one unified json file
 9. Remove the `output/querier.out` file.
 
-Right now running the script will run the `do_one_measurement` function twice, both times using `/home/elmer/ns1data/ns1-1h-anon.csv` as input. Once setting the TCP retry percentage to 0 and once setting it to 100 percent. 
+Right now running the script will run the `do_one_measurement` function once, using `/home/elmer/ns1data/ns1-1h-anon.csv` as input setting the TCP retry percentage to 50. 
+
+There is also another script `run_measurement_batch.sh`. I use this script to run all the measurements that I want to run in one go. This means for every percentage of TCP it runs the `do_one_measurement` function 10 times. 
