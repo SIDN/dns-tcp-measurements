@@ -47,49 +47,7 @@ do_one_measurement () {
 
 timestamp_str=$(date +"%d-%m-%Y_%H:%M:%S")
 
-measurements_to_do=(6 7 8 9 10)
-
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 0% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/0_tcp_host_${timestamp_str}_$measurement.json" "0"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 0% tcp done"
-    sleep 60
-done
-
 measurements_to_do=(1 2 3 4 5 6 7 8 9 10)
-
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 10% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/10_tcp_host_${timestamp_str}_$measurement.json" "10"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 10% tcp done"
-    sleep 60
-done
-
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 20% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/20_tcp_host_${timestamp_str}_$measurement.json" "20"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 20% tcp done"
-    sleep 60
-done
-
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 30% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/30_tcp_host_${timestamp_str}_$measurement.json" "30"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 30% tcp done"
-    sleep 60
-done
 
 for measurement in "${measurements_to_do[@]}"
 do 
@@ -101,65 +59,95 @@ do
     sleep 60
 done
 
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 50% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/50_tcp_host_${timestamp_str}_$measurement.json" "50"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 50% tcp done"
-    sleep 60
-done
+# for measurement in "${measurements_to_do[@]}"
+# do 
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] starting measurement no. $measurement 20% tcp"
+#     do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/20_tcp_host_${timestamp_str}_$measurement.json" "20"
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] measurement no. $measurement 20% tcp done"
+#     sleep 60
+# done
 
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 60% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/60_tcp_host_${timestamp_str}_$measurement.json" "60"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 60% tcp done"
-    sleep 60
-done
+# for measurement in "${measurements_to_do[@]}"
+# do 
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] starting measurement no. $measurement 30% tcp"
+#     do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/30_tcp_host_${timestamp_str}_$measurement.json" "30"
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] measurement no. $measurement 30% tcp done"
+#     sleep 60
+# done
 
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 70% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/70_tcp_host_${timestamp_str}_$measurement.json" "70"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 70% tcp done"
-    sleep 60
-done
+# for measurement in "${measurements_to_do[@]}"
+# do 
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] starting measurement no. $measurement 40% tcp"
+#     do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/40_tcp_host_${timestamp_str}_$measurement.json" "40"
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] measurement no. $measurement 40% tcp done"
+#     sleep 60
+# done
 
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 80% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/80_tcp_host_${timestamp_str}_$measurement.json" "80"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 80% tcp done"
-    sleep 60
-done
+# for measurement in "${measurements_to_do[@]}"
+# do 
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] starting measurement no. $measurement 50% tcp"
+#     do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/50_tcp_host_${timestamp_str}_$measurement.json" "50"
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] measurement no. $measurement 50% tcp done"
+#     sleep 60
+# done
 
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 90% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/90_tcp_host_${timestamp_str}_$measurement.json" "90"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 90% tcp done"
-    sleep 60
-done
+# for measurement in "${measurements_to_do[@]}"
+# do 
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] starting measurement no. $measurement 60% tcp"
+#     do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/60_tcp_host_${timestamp_str}_$measurement.json" "60"
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] measurement no. $measurement 60% tcp done"
+#     sleep 60
+# done
 
-for measurement in "${measurements_to_do[@]}"
-do 
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] starting measurement no. $measurement 100% tcp"
-    do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/100_tcp_host_${timestamp_str}_$measurement.json" "100"
-    date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    echo "[$date_string] measurement no. $measurement 100% tcp done"
-    sleep 60
-done
+# for measurement in "${measurements_to_do[@]}"
+# do 
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] starting measurement no. $measurement 70% tcp"
+#     do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/70_tcp_host_${timestamp_str}_$measurement.json" "70"
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] measurement no. $measurement 70% tcp done"
+#     sleep 60
+# done
+
+# for measurement in "${measurements_to_do[@]}"
+# do 
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] starting measurement no. $measurement 80% tcp"
+#     do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/80_tcp_host_${timestamp_str}_$measurement.json" "80"
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] measurement no. $measurement 80% tcp done"
+#     sleep 60
+# done
+
+# for measurement in "${measurements_to_do[@]}"
+# do 
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] starting measurement no. $measurement 90% tcp"
+#     do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/90_tcp_host_${timestamp_str}_$measurement.json" "90"
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] measurement no. $measurement 90% tcp done"
+#     sleep 60
+# done
+
+# for measurement in "${measurements_to_do[@]}"
+# do 
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] starting measurement no. $measurement 100% tcp"
+#     do_one_measurement "test-csv/n1-1h-anon.csv" "stats-output/100_tcp_host_${timestamp_str}_$measurement.json" "100"
+#     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
+#     echo "[$date_string] measurement no. $measurement 100% tcp done"
+#     sleep 60
+# done
 
 # date_string=$(date +"%d-%m-%Y_%H:%M:%S")
 # echo "[$date_string] starting measurement no. 1 0% tcp"
