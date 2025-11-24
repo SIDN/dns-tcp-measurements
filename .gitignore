@@ -4,3 +4,4 @@ stats-output
 zones
 output/querier.out
 graphs
+raw-data/raw_data.csv
