@@ -38,12 +38,17 @@ In this command we specify that the network used must be `host`. This is because
 After you have this running in a container you can run the `querier` as explained above. 
 
 ## Needed configuration on machine
-On the machine where you run this code, you need to make sure you can open up enough file descriptors. This can done by 
-running:
+On the machine where you run this code, you need to make sure you can open up enough file descriptors and that you are able to make enough TCP 
+connections. This can done by running:
 ```
-ulimit -n 16384
+sysctl -w fs.nr_open=33554432
+fs.nr_open = 33554432
+ulimit -Hn 33554432
+ulimit -Sn 33554432
+sysctl net.ipv4.tcp_fin_timeout=30
+sysctl net.ipv4.tcp_tw_reuse=1
 ```
-
+s
 # Measurements
 ## stats.sh
 The `stats.sh` script takes as input the output filename, in which the gathered statistics get stroed. The script gets the statistics gathered by podman from a running podman container every 10 seconds. It then puts the statistics JSON into the output file in a JSON list format. The loop gathering statistics will run indefinitely, you can stop it 

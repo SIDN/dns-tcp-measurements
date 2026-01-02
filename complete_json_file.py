@@ -42,13 +42,6 @@ def parse_querier_output(querier_output):
 
 input_filename = sys.argv[1]
 output_filename = sys.argv[2]
-# querier_output_file = sys.argv[3]
-
-
-#with open(querier_output_file, 'r') as file:
-#    querier_output = file.readlines() # This will put each line in the file as a separate string in an array
-
-#parsed_output = parse_querier_output(querier_output)
 
 with open(output_filename, 'r') as file:
     stat_data = json.load(file)
@@ -56,11 +49,6 @@ with open(output_filename, 'r') as file:
 
 total_data = {
     "containerOutput" : stat_data,
- #   "numberErrors" : parsed_output['number_errors'],
- #   "querySendingTime" : parsed_output['Execution time'],
- #   "numberOfQueries" : parsed_output['Total queries'],
- #   "tcpPercentage" : parsed_output['Amount with TCP']/parsed_output['Total queries'] * 100,
- #   "rawOutput" : querier_output,
     "network" : "host"
 }
 
