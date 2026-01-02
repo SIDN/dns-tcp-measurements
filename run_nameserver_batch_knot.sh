@@ -13,7 +13,7 @@ do_one_measurement () {
     # The function gets one arguments: output_filename
     podman run --replace --rm --network=host \
      -v ./knot/config/knot.conf:/config/knot.conf -v ./zones:/zones \
-     --name knot-query docker.io/cznic/knot:latest knotd -v -v & # '&' makes it run in the background
+     --name knot-query docker.io/cznic/knot:3.5 knotd -v -v & # '&' makes it run in the background
     local pman_PID=$!
     ./test_synch.sh # this program will exit once the nameserver has loaded
     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
