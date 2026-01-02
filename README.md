@@ -168,5 +168,8 @@ In each of these scripts is the `do_one_measurement` function that holds the act
 3. Once it is done running, use `ssh` to create the `/tmp/test-readiness/ready` file on the other server that shows it we are done sending DNS requests. Note that hence in order to run this script you need to be able to connect with `ssh` to the other server.
 4. Sleep for 60 seconds to take into account the 60 seconds of only running `stats.sh` on the second server.
 
+## Measurements without retries
+The files: `no-retry/querier_no_retry.go`, `run_nameserver_batch_only_tcp.sh`, and `run_querier_only_tcp.sh` all correspond to those needed to perform a slightly different measurement, where we don't first send all requests over UDP and then retry a percentage of DNS requests over TCP, but send all requests immediately over TCP. Since this required different Go code we had to write a different `.go` program for this, which is run through these scripts in the same manner as described in the two sections above.
+
 ## analysis/make_graphs_updated.ipynb
 This file is a Jupyter Notebook that holds the python code that we used to analyze our outputs and make the corresponding graphs.
