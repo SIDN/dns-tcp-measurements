@@ -5,3 +5,8 @@ zones
 output/querier.out
 graphs
 raw-data/raw_data.csv
+auth-powerdns-main
+pdns/4o/4o.zone.signed
+bind/var/cache/bind/managed-keys.bind
+bind/var/cache/bind/managed-keys.bind.jnl
+bind/var/log/named.log

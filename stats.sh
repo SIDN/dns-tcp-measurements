@@ -19,7 +19,7 @@ for (( ; ; ))
 do 
     # Get the statistics
     # TODO check whether this command is also correct on the testbed
-    response=$(curl --unix-socket /run/user/1010/podman/podman.sock http://d/v5.0.0/libpod/containers/stats?stream=false) 
+    response=$(curl --unix-socket /run/user/4002/podman/podman.sock http://d/v5.0.0/libpod/containers/stats?stream=false) 
     if [ "$first_entry" = true ]; then 
         echo "$response" >> $OUTPUT_FILE
         first_entry=false
