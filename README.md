@@ -37,7 +37,7 @@ podman build -f Dockerfile --tag=querier-nsd:latest
 Then afterwards you can run you the `nsd` nameserver in a container with the following command (provided you have the 
 right file structure)
 ```
-podman run --rm --network=host -it -v ./nsd.conf:/etc/nsd/nsd.conf -v ./zones:/dns -v ./config:/config --name nsd-query querier-nsd:latest nsd -V 2 -d 
+podman run --rm --network=host -it -v ./nsd.conf:/etc/nsd/nsd.conf -v ./zones:/dns --name nsd-query querier-nsd:latest nsd -V 2 -d 
 ```
 In this command we specify that the network used must be `host`. This is because the `slirp4netns` network seems to be slower and is less able to handle many TCP requests compared to the `pasta` and `host` network. The `host` network is able to handle TCP requests a lot faster than the `pasta` network. \
 In addition to this we put our `./zones` folder, which contains our zone file, at the `/dns` folder in the image, since that is where we said it would be in our configuration file. \
@@ -61,14 +61,14 @@ This should give an up and running BIND nameserver that we can send DNS requests
 #### Knot
 Just like with BIND for Knot we use the published official container. So, first we have to pull this again:
 ```
-podman pull docker.io/cznic/knot:3.5
+podman pull docker.io/cznic/knot:v3.5.2
 ```
 
 In the `knot` folder the needed folder structure is given. To run the container, you need to change the `knot/knot.conf` file to your liking, especially the location of the zone file. 
 
 Once the configuration is as wanted, we can start the container:
 ```
-podman run --replace --rm --network=host -v ./knot/config/knot.conf:/config/knot.conf -v ./zones:/zones --name knot-query docker.io/cznic/knot:3.5 knotd -v -v
+podman run --replace --rm --network=host -v ./knot/config/knot.conf:/config/knot.conf -v ./zones:/zones --name knot-query docker.io/cznic/knot:v3.5.2 knotd -v -v
 ```
 Where we again mount the folders we need in the container using the `-v` option and use the `host` network option. 
 
