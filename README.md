@@ -4,7 +4,7 @@ Querier for replaying DNS queries against an authoritative nameserver. The repla
 In addition to this querier, the repository also contains code to run this querier against four different nameserver implementations and during this run measure the CPU usage used by the nameserver while it processes and answers the queries it receives. 
 
 ## Input
-For the querier to be able to send queries it needs an input file as input. The dataformat of this file should be as follows:
+For the querier to be able to send queries it needs an input file as input. The data format of this file should be as follows:
 ```
 0.001,example.nl,AAAA,UDP,0
 ```
@@ -21,7 +21,7 @@ There are several arguments that you can pass to the executable. These are:
 The default value is: `test-csv/test_file_structure.csv`.
 - `-p [percentage]`: with the `-p` option you can pass a number that represents the percentage of times that you 
 want to retry over TCP. The default value is `100`.
-- `-s [serveraddress]`: with the `-s` option you can pass the address of the name server that you want to send the queries 
+- `-s [server address]`: with the `-s` option you can pass the address of the name server that you want to send the queries 
 to. The address is to be formatted in the following way: `[IP address]:[port]`. The default value is `127.0.0.1:4242`.
 
 ### Building and running local nameserver
@@ -172,4 +172,4 @@ In each of these scripts is the `do_one_measurement` function that holds the act
 The files: `no-retry/querier_no_retry.go`, `run_nameserver_batch_only_tcp.sh`, and `run_querier_only_tcp.sh` all correspond to those needed to perform a slightly different measurement, where we don't first send all requests over UDP and then retry a percentage of DNS requests over TCP, but send all requests immediately over TCP. Since this required different Go code we had to write a different `.go` program for this, which is run through these scripts in the same manner as described in the two sections above.
 
 ## analysis/make_graphs_updated.ipynb
-This file is a Jupyter Notebook that holds the python code that we used to analyze our outputs and make the corresponding graphs.
+This file is a Jupyter Notebook that holds the python code that we used to analyse our outputs and make the corresponding graphs.
