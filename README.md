@@ -101,7 +101,6 @@ On both servers where you run this code, you need to make sure you can open up e
 connections. This can be done by running:
 ```
 sysctl -w fs.nr_open=33554432
-fs.nr_open = 33554432
 ulimit -Hn 33554432
 ulimit -Sn 33554432
 sysctl net.ipv4.tcp_fin_timeout=30
