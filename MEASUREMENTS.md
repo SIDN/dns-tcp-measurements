@@ -1,5 +1,5 @@
 # Reproducing the Measurements
-In this file you can read how you can reproduce our measurements using the containers and Go code built in according to the instructions of the README.
+In this file you can read how you can reproduce our measurements using the containers and Go code built in according to the instructions of the [README](README.md).
 
 ## Measurement Overview
 On a high level the measurements were performed with the two servers that were connected to each other and had the following responsibilities:
