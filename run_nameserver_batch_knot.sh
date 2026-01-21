@@ -29,7 +29,7 @@ do_one_measurement () {
     ssh eline@eline01.s6s.nl "touch /tmp/test-readiness/ready"
     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
     echo "[$date_string] querier should be starting now"
-    sleep 50m # I guess we can assume it takes at least this many minutes, to make sure it is not too busy waiting
+    sleep 50m # We can assume it takes at least this many minutes, to make sure it is not too busy waiting
     # Now we wait until the same ready file is created in our tmp file
     while [ ! -f "/tmp/test-readiness/ready" ]; do
         sleep 1 # Every second check whether it was created yet or not

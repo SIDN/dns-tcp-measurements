@@ -124,19 +124,12 @@ func readQueryData(filename string) ([]Query, error) {
 func resolve(m *dns.Msg, address string, client *dns.Client) Response {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	// resp, rtt, err := client.Exchange(ctx, m, "udp", address)
 	tcp := false
 
-	// if err != nil {
-	// return Response{err: fmt.Errorf("resolve: error while doing udp exchange: %s", err)}
-	// }
-	// if rand.Float64()*100 < percentage { //According to rand we make sure we only select `percentage` of queries
-	// tcp = true
 	resp, rtt, err := client.Exchange(ctx, m, "tcp", address)
 	if err != nil {
 		return Response{err: fmt.Errorf("resolve: error while doing tcp exchange: %s", err)}
 	}
-	// }
 
 	return Response{resp: resp, rtt: rtt, err: nil, tcp: tcp}
 }

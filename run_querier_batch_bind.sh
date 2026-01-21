@@ -22,10 +22,7 @@ do_one_measurement () {
     echo "[$date_string] Nameserver has signalled it has started"
     rm -f "/tmp/test-readiness/ready" # remove the file so it's not there on the next run
     # In the other server the statistics is started HERE
-    # date_string=$(date +"%d-%m-%Y_%H:%M:%S")
-    # echo "[$date_string] Statistics should have been started"
-    # # Wait for the statistics of the other server to finish
-    # sleep 60
+
     date_string=$(date +"%d-%m-%Y_%H:%M:%S")
     echo "[$date_string] Starting querier"
     ~/go/bin/querier -f "$1" -p "$2" -s "$3" > "$4"
