@@ -140,4 +140,4 @@ podman run --replace --rm --network=host -d --name=pqc_pdns pdns-test
 ```
 
 ## Reproducing the Measurements
-You can read how the measurements were performed and how you can reproduce them in the file `MEASUREMENTS.md`. We separated this to keep the README a bit more compact. 
+You can read how the measurements were performed and how you can reproduce them in the file [MEASUREMENTS.md](MEASUREMENTS.md). We separated this to keep the README a bit more compact. 
